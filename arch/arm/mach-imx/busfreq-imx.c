@@ -144,6 +144,7 @@ static int busfreq_notify(enum busfreq_event event)
 	return notifier_to_errno(ret);
 }
 
+#ifdef CONFIG_CPU_FREQ
 int register_busfreq_notifier(struct notifier_block *nb)
 {
 	return raw_notifier_chain_register(&busfreq_notifier_chain, nb);
@@ -155,7 +156,7 @@ int unregister_busfreq_notifier(struct notifier_block *nb)
 	return raw_notifier_chain_unregister(&busfreq_notifier_chain, nb);
 }
 EXPORT_SYMBOL(unregister_busfreq_notifier);
-
+#endif
 /*
  * enter_lpm_imx6_up and exit_lpm_imx6_up is used by
  * i.MX6SX/i.MX6UL for entering and exiting lpm mode.
@@ -685,6 +686,7 @@ static int set_high_bus_freq(int high_bus_freq)
 	return 0;
 }
 
+#ifdef CONFIG_CPU_FREQ
 void request_bus_freq(enum bus_freq_mode mode)
 {
 	mutex_lock(&bus_freq_mutex);
@@ -814,7 +816,7 @@ int get_bus_freq_mode(void)
 	return cur_bus_freq_mode;
 }
 EXPORT_SYMBOL(get_bus_freq_mode);
-
+#endif
 static struct map_desc ddr_iram_io_desc __initdata = {
 	/* .virtual and .pfn are run-time assigned */
 	.length		= SZ_1M,
