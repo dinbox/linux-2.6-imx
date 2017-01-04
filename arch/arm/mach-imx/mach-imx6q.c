@@ -15,6 +15,8 @@
 #include <linux/cpu.h>
 #include <linux/delay.h>
 #include <linux/export.h>
+#include <linux/gpio.h>
+#include <linux/i2c.h>
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/irq.h>
@@ -312,6 +314,18 @@ static inline void imx6q_enet_init(void)
 		imx6q_enet_clk_sel();
 }
 
+static struct i2c_board_info tp510_i2c_devices[] __initdata = {
+	{ I2C_BOARD_INFO("ilitek_i2c", 0x41), },
+};
+
+static void __init tp510_init_ili2117(void)
+{
+	// Connect interrupt pin (GPIO bank 5, pin 17)
+	tp510_i2c_devices[0].irq = gpio_to_irq(IMX_GPIO_NR(5, 12));
+	i2c_register_board_info(2, tp510_i2c_devices,
+	                        ARRAY_SIZE(tp510_i2c_devices));
+}
+
 static void __init imx6q_init_machine(void)
 {
 	struct device *parent;
@@ -333,6 +347,8 @@ static void __init imx6q_init_machine(void)
 	imx6q_csi_mux_init();
 	cpu_is_imx6q() ?  imx6q_pm_init() : imx6dl_pm_init();
 	imx6q_axi_init();
+
+	tp510_init_ili2117();
 }
 
 #define OCOTP_CFG3			0x440
