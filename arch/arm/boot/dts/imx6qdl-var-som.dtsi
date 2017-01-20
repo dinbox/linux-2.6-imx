@@ -15,6 +15,7 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/sound/tlv320aic31xx-micbias.h>
 
 / {
 	aliases {
@@ -108,6 +109,7 @@
 	};
 #endif
 
+#if 0
 	sound {
 		compatible = "fsl,imx6q-var-som-tlv320aic3x", "fsl,imx-audio-tlv320aic3x";
 		model = "tlv320aic3x-audio";
@@ -123,6 +125,25 @@
 			"CPU-Capture",		"Capture";
 		mux-int-port = <2>;
 		mux-ext-port = <3>;
+	};
+#endif
+
+	sound3100 {
+		compatible = "fsl,imx6q-var-som-tlv320aic3x", "fsl,imx-audio-tlv320aic3x";
+		model = "tlv320aic31xx-audio";
+		cpu-dai = <&ssi2>;
+		audio-codec = <&codec3100>;
+		audio-routing =
+			/* Headphone connected to HPL, HPR */
+			"Headphone Jack", "HPL",
+			"Headphone Jack", "HPR",
+			"Speaker", "SPK",
+			"Line In Jack", "MIC1LP",
+			"Line In Jack", "MIC1RP",
+			"Line In Jack", "MIC1LM";
+
+		mux-int-port = <2>;
+		mux-ext-port = <4>;
 	};
 
 	sound-hdmi {
@@ -290,6 +311,30 @@
 	pinctrl-0 = <&pinctrl_i2c1_2>;
 	status = "okay";
 
+	codec3100: tlv320aic31xx@18 {
+		compatible = "ti,tlv320aic3100";
+		reg = <0x18>;
+		status = "okay";
+
+		clocks = <&clks IMX6QDL_CLK_CKO2>;
+		clock-names = "clko_clk";
+
+		ai31xx-micbias-vg = <MICBIAS_2_0V>;
+
+		/* Regulators */
+
+		AVDD-supply = <&reg_audio>;
+		IOVDD-supply = <&reg_audio>;
+		DRVDD-supply = <&reg_audio>;
+		DVDD-supply = <&reg_audio>;
+		HPVDD-supply = <&reg_audio>;
+		SPRVDD-supply = <&reg_audio>;
+		SPLVDD-supply = <&reg_audio>;
+
+		gpio-reset = <&gpio1 2 GPIO_ACTIVE_LOW>;
+		};
+
+#if 0
 	ov564x_mipi: ov564x_mipi@3c {
 		compatible = "ovti,ov564x_mipi";
 		reg = <0x3c>;
@@ -306,6 +351,7 @@
 		mclk = <24000000>;
 		mclk_source = <0>;
 	};
+#endif
 };
 
 &i2c2 {
@@ -318,7 +364,7 @@
 		compatible = "fsl,imx6-hdmi-i2c";
 		reg = <0x50>;
 	};
-
+#if 0
 	codec: tlv320aic3x@1b {
 		compatible = "ti,tlv320aic3x";
 		reg = <0x1b>;
@@ -334,6 +380,7 @@
 			5 /* AIC3X_GPIO2_FUNC_DIGITAL_MIC_INPUT */
 		>;
 	};
+#endif
 };
 
 &i2c3 {
@@ -371,18 +418,27 @@
 				/* Wifi Slow Clock */
 				MX6QDL_PAD_ENET_RXD0__OSC32K_32K_OUT	0x000b0
 				/* Audio Clock */
-				MX6QDL_PAD_GPIO_0__CCM_CLKO1		0x130b0
-				/* Camera Clock */
 				MX6QDL_PAD_GPIO_3__CCM_CLKO2		0x130b0
+				/* Camera Clock */
+				/*MX6QDL_PAD_GPIO_3__CCM_CLKO2		0x130b0*/
 			>;
 		};
-
+#if 0
 		pinctrl_audmux_2: audmux {
 			fsl,pins = <
 				MX6QDL_PAD_CSI0_DAT7__AUD3_RXD		0x130b0
 				MX6QDL_PAD_CSI0_DAT4__AUD3_TXC		0x130b0
 				MX6QDL_PAD_CSI0_DAT5__AUD3_TXD		0x110b0
 				MX6QDL_PAD_CSI0_DAT6__AUD3_TXFS		0x130b0
+			>;
+		};
+#endif
+		pinctrl_audmux_2: audmux {
+			fsl,pins = <
+				MX6QDL_PAD_DISP0_DAT23__AUD4_RXD	0x130b0
+				MX6QDL_PAD_DISP0_DAT20__AUD4_TXC	0x130b0
+				MX6QDL_PAD_DISP0_DAT21__AUD4_TXD	0x110b0
+				MX6QDL_PAD_DISP0_DAT22__AUD4_TXFS	0x130b0
 			>;
 		};
 

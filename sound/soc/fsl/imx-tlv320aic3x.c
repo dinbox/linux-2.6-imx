@@ -42,6 +42,7 @@ static int imx_tlv320aic3x_dai_init(struct snd_soc_pcm_runtime *rtd)
 					struct imx_tlv320aic3x_data, card);
 	struct device *dev = rtd->card->dev;
 	int ret;
+	struct snd_soc_card *card = rtd->card;
 
 	ret = snd_soc_dai_set_sysclk(rtd->codec_dai, 0,
 				     data->clk_frequency, SND_SOC_CLOCK_IN);
@@ -49,6 +50,8 @@ static int imx_tlv320aic3x_dai_init(struct snd_soc_pcm_runtime *rtd)
 		dev_err(dev, "could not set codec driver clock params\n");
 		return ret;
 	}
+	/* Set mic bias ON as default */
+	snd_soc_dapm_force_enable_pin(&card->dapm, "MICBIAS");
 
 	return 0;
 }
@@ -164,7 +167,7 @@ static int imx_tlv320aic3x_probe(struct platform_device *pdev)
 
 	data->dai.name = "HiFi";
 	data->dai.stream_name = "HiFi";
-	data->dai.codec_dai_name = "tlv320aic3x-hifi";
+	data->dai.codec_dai_name = "tlv320aic31xx-hifi";
 	data->dai.codec_of_node = codec_np;
 	data->dai.cpu_of_node = cpu_np;
 	data->dai.platform_of_node = cpu_np;
