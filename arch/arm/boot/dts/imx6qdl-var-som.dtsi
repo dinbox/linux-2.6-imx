@@ -533,8 +533,6 @@
 			fsl,pins = <
 				MX6QDL_PAD_EIM_D25__UART3_RX_DATA	0x1b0b1
 				MX6QDL_PAD_EIM_D24__UART3_TX_DATA	0x1b0b1
-				MX6QDL_PAD_EIM_D23__UART3_CTS_B		0x1b0b1
-				MX6QDL_PAD_EIM_EB3__UART3_RTS_B		0x1b0b1
 			>;
 		};
 
@@ -733,6 +731,8 @@
 &uart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3_2>;
+	linux,rs485-enabled-at-boot-time;
+	rts-gpios = <&gpio2 31 GPIO_ACTIVE_LOW>;
 	fsl,uart-has-rtscts;
 	status = "okay";
 };
